@@ -1,0 +1,29 @@
+{
+  "name": "typescript-sandbox",
+  "version": "1.0.0",
+  "description": "Typescript sandbox",
+  "main": "index.js",
+  "license": "MIT",
+  "keywords": [
+    "typescript",
+    "sandbox"
+  ],
+  "author": "Guillaume Robert",
+  "devDependencies": {
+    "html-webpack-plugin": "^5.3.1",
+    "parcel": "^2.0.0-beta.2",
+    "parcel-plugin-typescript": "^1.0.0",
+    "ts-loader": "^9.1.2",
+    "typescript": "^4.2.4",
+    "webpack": "^5.37.0",
+    "webpack-cli": "^4.7.0",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "scripts": {
+    "build": "parcel build index.html",
+    "start-parcel": "parcel serve index.html",
+    "start-ts": "tsc",
+    "start-webpack": "webpack serve --config webpack.config.js --mode development"
+  },
+  "dependencies": {}
+}
