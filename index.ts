@@ -261,7 +261,6 @@ class Players implements PlayerInfo {
 
     public positions: string[] = ["Point guard", "Power Forward", "Small Forward"];
 
-    // Arrow function will no work here
     public getPositions = () => {
         let result: string = "";
         for (let dept of this.positions) {
