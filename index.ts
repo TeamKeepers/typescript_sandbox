@@ -12,7 +12,10 @@ const money: number = 100.5;
 
 // Arrays
 const list: number[] = [0,1,2];
-const list2: [string, number, boolean] = ["joe", 23, true];
+// or same thing
+const list2: Array<number> = [0,1,2];
+// or Tuples
+const list3: [string, number, boolean] = ["joe", 23, true];
 // Works but doesn't make sense, we are using TS because of hard type
 const randomList: any[] = ["joe", 23, {"test": true}];
 
@@ -26,10 +29,10 @@ myStr = "joe";
 // myStr = 1;
 
 // Enum is a way to define set of named constant
-enum Person { Student, Designer, FullStack, DataScientist };
+enum TechGuy { Student, Designer, FullStack, DataScientist };
 // project cannot be something else than what is gathered in Mission.
-const student: Person = Person.Student;
-const dev: Person = Person.FullStack;
+const student: TechGuy = TechGuy.Student;
+const dev: TechGuy = TechGuy.FullStack;
 
 // Type never cannot have any value ... weird !
 // const weirdType: never = 3;
@@ -59,9 +62,55 @@ const sayHelloOpt2 = (word = "Hola", ...otherParams: string[]): void => console.
 sayHelloOpt2("Konnichiwa", "This is other string ...", "... params");
 
 /**
- *  UNION TYPES with the pipe
+ * INTERFACE VERSUS TYPE
+ * Accept a specific "shape" for an object
+ * Best practice is to import the interfaces from another file like a module (export / import)
  */
 
+// INTERFACE
+
+interface PersonInfo {
+    name: string,
+    age?: number // Optional param
+}
+
+const personInfoRender = (pax: PersonInfo): void => {
+    console.log(`ID: ${pax.name} is ${pax.age} years old.`);
+};
+
+personInfoRender({
+    name: "Joe",
+    age: 99
+});
+
+
+const personInfoRenderDestruct = ({name, age = 10}: PersonInfo): void => {
+    console.log(`ID: ${name} is ${age} years old.`);
+};
+
+personInfoRenderDestruct({
+    name: "Mike"
+});
+
+// TYPE
+// Exact same thing but, where you can redifine Interface, you cannot with Type.
+
+type TestType = {
+    name: string
+};
+
+type TestType2 = string | number | null;
+
+let myTestType: TestType2 = "Joe";
+myTestType = 23;
+
+/**
+ *  UNION TYPES with the pipe
+ * or
+ * INTERSECTION 
+ */
+
+// UNION
 // We can request null but string by default accept null or undefined
 let last_name: string | null = "Joe";
 console.log(last_name);
@@ -87,49 +136,43 @@ console.log(dog)
 dog = null;
 console.log(dog)
 
-/**
- * INTERFACE
- * Accept a specific "shape" for an object
- * Best practice is to import the interfaces from another file like a module (export / import)
- */
+// INTERSECTION
+// Allow to merge 2 types 
 
-interface PersonInfo {
+type Identity = {
     name: string,
-    age?: number // Optional param
+    age?: number
 }
 
-const personInfoRender = (pax: PersonInfo): void => {
-    console.log(`ID: ${pax.name} is ${pax.age} years old.`);
-};
+type Hobbies = {
+    music: string,
+    sport: string
+}
 
-personInfoRender({
-    name: "Joe",
-    age: 99
-});
+// Need to fill both mandatory infos
+const whoIAm: Identity & Hobbies = {
+    name: "Joe Mama",
+    music: "Blues",
+    sport: "Basketball"
+}
 
-
-const personInfoRenderDestruct = ({name, age = 10}: PersonInfo): void => {
-    console.log(`ID: ${name} is ${age} years old.`);
-};
-
-personInfoRenderDestruct({
-    name: "Mike"
-});
+// We can merge 2 type into a single one
+type Person = Identity & Hobbies;
 
 
 /**
  * ENUMS
  */
 
-enum TypeTest {
-    Video = "VIDEO", // IF NO VALUE (=), IT WILL RETURN THE INDEX, HERE NUMBER 0
-    Blog = "BLOG_POST", // OR 1 IF NO VALUE
-    Quizz = "QUIZZ" // OR 2 IF NOY VALUE
+enum Sports {
+    Basketball = "BASKETBALL", // IF NO VALUE (=), IT WILL RETURN THE INDEX, HERE NUMBER 0
+    Boxing = "MUAY-THAI", // OR 1 IF NO VALUE
+    Rugby = "RUGBY" // OR 2 IF NOY VALUE
 }
 
-const createContent = (contentType: TypeTest): void => console.log(contentType);
+const createContent = (contentType: Sports): void => console.log(contentType);
 
-createContent(TypeTest.Video);
+createContent(Sports.Boxing);
 
 /**
  * CLASSES
@@ -143,6 +186,9 @@ class Team {
     protected title: number;
     readonly bestPlayer: string;
 
+    // Static to share a common variable for all the instances (Class level)
+    static sport: string = "Basketball";
+
     constructor(name: string) {
         this.name = name;
         this.lastTitle = new Date("2014-06-15");
@@ -151,7 +197,7 @@ class Team {
     }
 
     score = (): string => {
-        console.log(`3 point for the ${this.name}!`);
+        console.log(`3 point for the ${this.name}! What a ${Team.sport} team ...`);
         return `3 point for the ${this.name}!`;
     }
 
@@ -171,10 +217,17 @@ class Team {
         return this.name;
     }
 
+    // No need for the public keyword, by default it will be defined as public
+    public getSport = (): string => Team.sport;
+
 }
+
 
 const Spurs = new Team("Spurs");
 Spurs.score();
+
+console.log("STATIC VAR", Team.sport);
+console.log("STATIC FROM GETTER", Spurs.getSport());
 
 // ERROR because Team name is private: no access
 // console.log(Spurs.name);
@@ -196,25 +249,83 @@ console.log(Spurs.bestPlayer);
 // Error because not write permission
 // Spurs.bestPlayer = "Tony Parker";
 
-/**
- * GENERICS
- * 
- */
+// HOW TO EXTEND A TYPE FOR CLASSES
+interface PlayerInfo {
+    positions: string[],
+};
 
-const testGen = <T>(arg: T): T => arg;
+class Players implements PlayerInfo {
 
-console.log(testGen("test generics"));
+    public positions: string[] = ["Point guard", "Power Forward", "Small Forward"];
+
+    // Arrow function will no work here
+    public getPositions = () => {
+        let result: string = "";
+        for (let dept of this.positions) {
+            result += `${dept} is great to get some W !\n`;
+        }
+        return result;
+    }
+
+}
+
+const players = new Players();
+console.log(players.getPositions());
+
+interface PlayerDetail extends Players {
+    name: string
+}
+
+class PowerForward implements PlayerDetail {
+    
+    public name: string;
+    public positions: string[] = ["Power Forward"]
+
+    constructor(name: string) {
+        this.name = name;
+    }
+
+    public getPositions = () => `My name is ${this.name} and I am a fuckin' good ${this.positions[0]} !`;
+
+}
+
+const Babac = new PowerForward("Boris Diaw");
+console.log(Babac.getPositions());
+
+// CLASS, INTERFACE AND GETTER/SETTER EXAMPLE IF PROPERTY IS PRIVATE OR PROTECTED >> AVOID
+// PUBLIC IS WAY MUCH EASIER 
+interface Staffing {
+    Departments: string,
+};
+
+class Staff implements Staffing {
+
+    protected _departments: string[] = ["General Manager", "Coach", "Player", "Marketing"];
+
+    // Arrow function will no work here
+    public get Departments() {
+        let result: string = "";
+        for (let dept of this._departments) {
+            result += `${dept} is essential to get some W !\n`;
+        }
+        return result;
+    }
+
+}
+
+const staff = new Staff();
+console.log(staff.Departments);
 
 /**
  * DUCK TYPING
- * 
+ * It's a way to check if we share the same properties/variables types across objects/classes
  */
 
 class Developer implements PersonInfo {
     
     public name: string;
     public age?: number;
-
+    
 }
 
 let AaronSwartz: PersonInfo = new Developer();
@@ -228,3 +339,50 @@ AaronSwartz = fake;
 // Complain because skill is not declared into PersonInfo
 // console.log(AaronSwartz.skill);
 console.log(AaronSwartz.name);
+
+/**
+ * GENERICS
+ * 
+ */
+
+// Expect to get the same argument and return the exact same type ... does not make sense but possible
+const testGen = <T>(arg: T): T => arg;
+// or
+function testGen2<WhateverName>(value: WhateverName): WhateverName {
+    let serialized = JSON.stringify(value);
+    console.log("STRINGIFIED", serialized)
+    return JSON.parse(serialized);
+}
+
+console.log(testGen("test generics"));
+console.log(testGen2({beginning: "Object into JSON", end: "Then back to Object"}));
+
+
+// With classes ... let's be honest, it could be a pain you know where
+
+class FullStack<T, U> {
+    public name: T;
+    public age?: U;
+    public job: string = "Full-Stack";
+
+    constructor(name: T, age: U) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public getName = (): string => {
+        return `${this.name}`;
+    }
+
+    public getAge = (): number => {
+        return Number(this.age);
+    }
+
+    public getAllInfo= () => {
+        return this.job;
+    }
+
+}
+
+const fullStackPerson = new FullStack<string, number>("Aaron Swartz", 26);
+console.log(`${fullStackPerson.getName()} is ${fullStackPerson.getAge()} and lives in our hearts.`);

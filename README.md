@@ -26,4 +26,4 @@ You have 3 solutions after running the `yarn install`:
 
 - [Html Webpack Plugin](https://www.npmjs.com/package/html-webpack-plugin) to serve properly the webpack compiled files and get all the console.logs. 
 
-> Sandbox based mainly on Typescript tuto by [Level Up Tutorials](https://www.leveluptutorials.com/tutorials/level-1-typescript/)
+> Sandbox based at the beginning on Typescript tuto by [Level Up Tutorials](https://www.leveluptutorials.com/tutorials/level-1-typescript/)
