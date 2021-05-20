@@ -41,6 +41,9 @@ const errorHandler = (error: string): never => {
     throw new Error(error)
 }
 
+// Objects
+const YoMama = (info: {name: string, punchline: string}): string => `${info.name}'s mom is so fat that ${info.punchline}`;
+console.log(YoMama({name: "Stifler", punchline: "when she skips a meal, the stock market drops"}))
 
 /**
  * TYPES IN FUNCTIONS
